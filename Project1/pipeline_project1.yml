@@ -6,7 +6,7 @@ trigger:
 
 parameters:
 - name: deployScaleset
-  type: bool
+  type: boolean
   displayName: last stage to run after image has been tested
   default: false
 
