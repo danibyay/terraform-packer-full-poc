@@ -33,48 +33,26 @@ stages:
     vmImage: $(vmImage)
 
   jobs:
-  - job: plan
-    displayName: Terraform Plan
-    variables:
-      TF_VAR_gallery_rg_name: $(gallery_rg_name)
-      TF_VAR_gallery_name: $(gallery_name)
-      TF_VAR_image_name: $(image_name)
-      TF_VAR_image_publisher: $(image_publisher)
-      TF_VAR_image_offer: $(image_offer)
-      TF_VAR_image_sku: $(image_sku)
+  - job: terraform
+    displayName: Terraform provisioning
     workspace:
       clean: all
     steps:
+      - script: |
+          chmod +x scripts/write_img_def_tfvars.sh
+          cat terraform.tfvars
+        workingDirectory: './image_def'
+        displayName: 'Create tfvars file from global variables'
+        env:
+          gallery_rg_name: $(gallery_rg_name)
+          gallery_name: $(gallery_name)
+          image_name: $(image_name)
+          image_publisher: $(image_publisher)
+          image_offer: $(image_offer)
+          image_sku: $(image_sku)
       - template: 'templates/terraform_plan_template.yml'
         parameters:
           tfWorkingDir: './image_def'
-  - job: waitForValidation
-    displayName: Wait for external validation
-    dependsOn: plan
-    pool: server
-    timeoutInMinutes: 4320 # job times out in 3 days
-    steps:
-      - task: ManualValidation@0
-        timeoutInMinutes: 1440 # task times out in 1 day
-        inputs:
-          notifyUsers: |
-            danybecerr@gmail.com
-          instructions: 'Please validate the build configuration and resume'
-          onTimeout: 'reject'
-  - job: apply
-    displayName: Terraform Apply
-    dependsOn: waitForValidation
-    condition: in(dependencies.waitForValidation.result, 'Succeeded')
-    variables:
-      TF_VAR_gallery_rg_name: $(gallery_rg_name)
-      TF_VAR_gallery_name: $(gallery_name)
-      TF_VAR_image_name: $(image_name)
-      TF_VAR_image_publisher: $(image_publisher)
-      TF_VAR_image_offer: $(image_offer)
-      TF_VAR_image_sku: $(image_sku)
-    workspace:
-      clean: all
-    steps:
       - template: 'templates/terraform_apply_template.yml'
         parameters:
           tfWorkingDir: './image_def'
