@@ -1,0 +1,99 @@
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+
+variables:
+- group: TF_PIPELINES
+- name: poolName
+  value: 'Azure Pipelines'
+- name: vmImage
+  value: 'ubuntu-latest'
+
+
+stages:
+- stage: Terraform
+  displayName: Deploy Terraform
+  pool:
+    name: $(poolName)
+    vmImage: $(vmImage)
+
+  jobs:
+  - job: plan
+    displayName: Terraform Plan
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+      - script: |
+          echo "##[group]Running terraform init"
+          terraform init -input=false
+        workingDirectory: '.'
+        displayName: 'Terraform Init'
+        failOnStderr: true
+        env:
+          ARM_CLIENT_ID: $(Client_ID)
+          ARM_CLIENT_SECRET: $(Client_Secret)
+          ARM_TENANT_ID: $(Tenant_ID)
+          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+          ACCOUNT_KEY: $(Storage_Account_Key)
+      - script: |
+          echo "##[group]Running terraform validate and fmt"
+          terraform validate
+        workingDirectory: '.'
+        displayName: 'Terraform Validation'
+        failOnStderr: true
+        env:
+          ARM_CLIENT_ID: $(Client_ID)
+          ARM_CLIENT_SECRET: $(Client_Secret)
+          ARM_TENANT_ID: $(Tenant_ID)
+          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+          ACCOUNT_KEY: $(Storage_Account_Key)
+      - script: |
+          echo "##[group]Running terraform plan"
+          terraform plan
+
+        workingDirectory: "."
+        displayName: 'Terraform Plan'
+        failOnStderr: true
+        env:
+          ARM_CLIENT_ID: $(Client_ID)
+          ARM_CLIENT_SECRET: $(Client_Secret)
+          ARM_TENANT_ID: $(Tenant_ID)
+          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+          ACCOUNT_KEY: $(Storage_Account_Key)
+  - job: waitForValidation
+    displayName: Wait for external validation
+    dependsOn: plan
+    pool: server
+    timeoutInMinutes: 4320 # job times out in 3 days
+    steps:
+      - task: ManualValidation@0
+        timeoutInMinutes: 1440 # task times out in 1 day
+        inputs:
+          notifyUsers: |
+            danybecerr@gmail.com
+          instructions: 'Please validate the build configuration and resume'
+          onTimeout: 'reject'
+  - job:
+    displayName: Terraform Apply
+    dependsOn: waitForValidation
+    condition: in(dependencies.waitForValidation.result, 'Succeeded', 'Skipped')
+    workspace:
+      clean: all
+    steps:
+      - script: |
+          echo "##[group]Running terraform Apply"
+          terraform init
+          terraform apply -auto-approve
+
+        workingDirectory: "."
+        displayName: 'Terraform Apply'
+        failOnStderr: true
+        env:
+          ARM_CLIENT_ID: $(Client_ID)
+          ARM_CLIENT_SECRET: $(Client_Secret)
+          ARM_TENANT_ID: $(Tenant_ID)
+          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+          ACCOUNT_KEY: $(Storage_Account_Key)
