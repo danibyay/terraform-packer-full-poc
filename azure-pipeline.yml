@@ -27,7 +27,7 @@ stages:
     steps:
       - template: terraform_plan_template.yml
         parameters:
-          tfWorkingDir: '.'
+          tfWorkingDir: '$(Pipeline.Workspace)'
   - job: waitForValidation
     displayName: Wait for external validation
     dependsOn: plan
@@ -50,4 +50,4 @@ stages:
     steps:
       - template: terraform_apply_template.yml
         parameters:
-          tfWorkingDir: '.'
+          tfWorkingDir: '$(Pipeline.Workspace)'
