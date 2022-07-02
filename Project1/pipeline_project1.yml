@@ -11,7 +11,8 @@ variables:
   value: 'Azure Pipelines'
 - name: vmImage
   value: 'ubuntu-latest'
-
+- name: projectRoot
+  value: $(System.DefaultWorkingDirectory)
 # image related vars
 - name: gallery_rg_name
   value: 'dani-resource-group'
