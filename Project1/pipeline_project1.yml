@@ -41,7 +41,7 @@ variables:
 - name: packerJsonFileName
   value: 'windows-template-project1.json'
 - name: azure_location
-  value: us-east
+  value: 'eastus'
 # Scale set related vars
 - name: scaleset_rg
   value: 'project1-scaleset-rg'
@@ -164,7 +164,7 @@ stages:
 
 - stage: TerraformScaleset
   dependsOn: packerBuild
-  condition: eq('${{ parameters.deployScaleset }}' , 'true')
+  condition: and(succeededOrFailed(), eq('${{ parameters.deployScaleset }}' , 'true'))
   displayName: Deploy Terraform scaleset with packer image
   pool:
     name: $(poolName)

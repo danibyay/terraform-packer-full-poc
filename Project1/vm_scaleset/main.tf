@@ -20,7 +20,7 @@ resource "azurerm_subnet" "scaleset_subnet" {
   ]
 }
 
-data "azurerm_shared_image_version" "robotics_image_from_gallery" {
+data "azurerm_shared_image_version" "scaleset_image_from_gallery" {
   name                = var.image_version
   image_name          = var.image_name
   gallery_name        = var.gallery_name
@@ -31,7 +31,7 @@ resource "azurerm_windows_virtual_machine_scale_set" "ms_common_latest_vmss" {
   name                = var.scaleset_name
   resource_group_name = azurerm_resource_group.scaleset_rg.name
   location            = azurerm_resource_group.scaleset_rg.location
-  sku                 = var.vm_size 
+  sku                 = var.vm_size
   instances           = 2 # this will be overwritten when implemented in AzureDevops
   computer_name_prefix = "at"
   admin_password      = var.vm_admin_password
@@ -51,7 +51,7 @@ resource "azurerm_windows_virtual_machine_scale_set" "ms_common_latest_vmss" {
     ]
   }
 
-  source_image_id =
+  source_image_id = data.azurerm_shared_image_version.scaleset_image_from_gallery.id
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadOnly"
