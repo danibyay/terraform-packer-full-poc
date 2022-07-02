@@ -35,7 +35,7 @@ steps:
       ACCOUNT_KEY: $(Storage_Account_Key)
   - script: |
       echo "##[group]Running terraform plan"
-      terraform plan $EXTRA_ARGS
+      terraform plan -var=$EXTRA_ARGS
     workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Plan'
     failOnStderr: true

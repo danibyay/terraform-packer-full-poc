@@ -12,7 +12,7 @@ steps:
   - script: |
       echo "##[group]Running terraform Apply"
       terraform init
-      terraform apply -auto-approve $EXTRA_ARGS
+      terraform apply -auto-approve -var=$EXTRA_ARGS
 
     workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Apply'

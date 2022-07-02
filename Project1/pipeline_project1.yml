@@ -7,7 +7,7 @@ trigger:
 parameters:
 - name: deployScaleset
   type: boolean
-  displayName: last stage to run after image has been tested
+  displayName: Deploy scaleset (image has been tested manually)
   default: false
 
 variables:
@@ -56,7 +56,7 @@ variables:
 - name: os_disk_size
   value: '256'
 - name: scaleset_extra_secret_var
-  value: '-var="vm_admin_password=$(VM_password)"'
+  value: 'vm_admin_password=$(VM_password)'
 # Terraform working directories
 - name: imgDefTerraformDirectory
   value: '$(Build.Repository.LocalPath)/$(projectDirectory)/image_def'
