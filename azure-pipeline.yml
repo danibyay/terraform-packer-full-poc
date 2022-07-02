@@ -51,6 +51,7 @@ stages:
           OverWrite: true
       - script: |
           chmod +x write_img_def_tfvars.sh
+          ./write_img_def_tfvars.sh
           cat terraform.tfvars
         workingDirectory: $(imgDefTerraformDirectory)
         displayName: 'Create tfvars file from global variables'
