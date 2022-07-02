@@ -11,17 +11,17 @@ variables:
 - name: vmImage
   value: 'ubuntu-latest'
 # image related vars
-- name: TF_VAR_gallery_rg_name
+- name: gallery_rg_name
   value: 'dani-resource-group'
-- name: TF_VAR_gallery_name
+- name: gallery_name
   value: 'winGallery'
-- name: TF_VAR_image_name
+- name: image_name
   value: 'test-image-1'
-- name: TF_VAR_image_publisher
+- name: image_publisher
   value: 'DanielaBG'
-- name: TF_VAR_image_offer
+- name: image_offer
   value: 'WindowsServer'
-- name: TF_VAR_image_sku
+- name: image_sku
   value: 'Example12345'
 
 
@@ -36,7 +36,12 @@ stages:
   - job: plan
     displayName: Terraform Plan
     variables:
-      TF_VAR_gallery_rg_name: $(TF_VAR_gallery_rg_name)
+      TF_VAR_gallery_rg_name: $(gallery_rg_name)
+      TF_VAR_gallery_name: $(gallery_name)
+      TF_VAR_image_name: $(image_name)
+      TF_VAR_image_publisher: $(image_publisher)
+      TF_VAR_image_offer: $(image_offer)
+      TF_VAR_image_sku: $(image_sku)
     workspace:
       clean: all
     steps:
@@ -56,10 +61,17 @@ stages:
             danybecerr@gmail.com
           instructions: 'Please validate the build configuration and resume'
           onTimeout: 'reject'
-  - job:
+  - job: apply
     displayName: Terraform Apply
     dependsOn: waitForValidation
-    condition: in(dependencies.waitForValidation.result, 'Succeeded', 'Skipped')
+    condition: in(dependencies.waitForValidation.result, 'Succeeded')
+    variables:
+      TF_VAR_gallery_rg_name: $(gallery_rg_name)
+      TF_VAR_gallery_name: $(gallery_name)
+      TF_VAR_image_name: $(image_name)
+      TF_VAR_image_publisher: $(image_publisher)
+      TF_VAR_image_offer: $(image_offer)
+      TF_VAR_image_sku: $(image_sku)
     workspace:
       clean: all
     steps:
