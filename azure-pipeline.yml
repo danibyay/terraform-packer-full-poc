@@ -24,7 +24,7 @@ variables:
 - name: image_offer
   value: 'WindowsServer'
 - name: image_sku
-  value: 'Example12345'
+  value: 'Example1234'
 
 
 stages:
