@@ -1,0 +1,21 @@
+parameters:
+- name: tf-working-directory
+  type: string
+  displayName: Terraform Working Directory
+  default: $(Pipeline.Workspace)
+
+steps:
+  - script: |
+      echo "##[group]Running terraform Apply"
+      terraform init
+      terraform apply -auto-approve
+
+    workingDirectory: ${{ parameters.tf-working-directory }}
+    displayName: 'Terraform Apply'
+    failOnStderr: true
+    env:
+      ARM_CLIENT_ID: $(Client_ID)
+      ARM_CLIENT_SECRET: $(Client_Secret)
+      ARM_TENANT_ID: $(Tenant_ID)
+      ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+      ACCOUNT_KEY: $(Storage_Account_Key)

@@ -25,44 +25,7 @@ stages:
     workspace:
       clean: all
     steps:
-      - checkout: self
-      - script: |
-          echo "##[group]Running terraform init"
-          terraform init -input=false
-        workingDirectory: '.'
-        displayName: 'Terraform Init'
-        failOnStderr: true
-        env:
-          ARM_CLIENT_ID: $(Client_ID)
-          ARM_CLIENT_SECRET: $(Client_Secret)
-          ARM_TENANT_ID: $(Tenant_ID)
-          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
-          ACCOUNT_KEY: $(Storage_Account_Key)
-      - script: |
-          echo "##[group]Running terraform validate and fmt"
-          terraform validate
-        workingDirectory: '.'
-        displayName: 'Terraform Validation'
-        failOnStderr: true
-        env:
-          ARM_CLIENT_ID: $(Client_ID)
-          ARM_CLIENT_SECRET: $(Client_Secret)
-          ARM_TENANT_ID: $(Tenant_ID)
-          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
-          ACCOUNT_KEY: $(Storage_Account_Key)
-      - script: |
-          echo "##[group]Running terraform plan"
-          terraform plan
-
-        workingDirectory: "."
-        displayName: 'Terraform Plan'
-        failOnStderr: true
-        env:
-          ARM_CLIENT_ID: $(Client_ID)
-          ARM_CLIENT_SECRET: $(Client_Secret)
-          ARM_TENANT_ID: $(Tenant_ID)
-          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
-          ACCOUNT_KEY: $(Storage_Account_Key)
+      - template: terraform_plan_template.yml
   - job: waitForValidation
     displayName: Wait for external validation
     dependsOn: plan
@@ -83,17 +46,4 @@ stages:
     workspace:
       clean: all
     steps:
-      - script: |
-          echo "##[group]Running terraform Apply"
-          terraform init
-          terraform apply -auto-approve
-
-        workingDirectory: "."
-        displayName: 'Terraform Apply'
-        failOnStderr: true
-        env:
-          ARM_CLIENT_ID: $(Client_ID)
-          ARM_CLIENT_SECRET: $(Client_Secret)
-          ARM_TENANT_ID: $(Tenant_ID)
-          ARM_SUBSCRIPTION_ID: $(Subscription_ID)
-          ACCOUNT_KEY: $(Storage_Account_Key)
+      - template: terraform_apply_template.yml

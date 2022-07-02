@@ -1,0 +1,44 @@
+parameters:
+- name: tf-working-directory
+  type: string
+  displayName: Terraform Working Directory
+  default: $(Pipeline.Workspace)
+
+steps:
+  - checkout: self
+  - script: |
+      echo "##[group]Running terraform init"
+      terraform init -input=false
+    workingDirectory: ${{ parameters.tf-working-directory }}
+    displayName: 'Terraform Init'
+    failOnStderr: true
+    env:
+      ARM_CLIENT_ID: $(Client_ID)
+      ARM_CLIENT_SECRET: $(Client_Secret)
+      ARM_TENANT_ID: $(Tenant_ID)
+      ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+      ACCOUNT_KEY: $(Storage_Account_Key)
+  - script: |
+      echo "##[group]Running terraform validate and fmt"
+      terraform validate
+    workingDirectory: ${{ parameters.tf-working-directory }}
+    displayName: 'Terraform Validation'
+    failOnStderr: true
+    env:
+      ARM_CLIENT_ID: $(Client_ID)
+      ARM_CLIENT_SECRET: $(Client_Secret)
+      ARM_TENANT_ID: $(Tenant_ID)
+      ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+      ACCOUNT_KEY: $(Storage_Account_Key)
+  - script: |
+      echo "##[group]Running terraform plan"
+      terraform plan
+    workingDirectory: ${{ parameters.tf-working-directory }}
+    displayName: 'Terraform Plan'
+    failOnStderr: true
+    env:
+      ARM_CLIENT_ID: $(Client_ID)
+      ARM_CLIENT_SECRET: $(Client_Secret)
+      ARM_TENANT_ID: $(Tenant_ID)
+      ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+      ACCOUNT_KEY: $(Storage_Account_Key)
