@@ -49,7 +49,7 @@ stages:
             write_img_def_tfvars.sh
           TargetFolder: $(imgDefTerraformDirectory)
           OverWrite: true
-      - script: write_img_def_tfvars.sh
+      - script: './write_img_def_tfvars.sh'
         workingDirectory: $(imgDefTerraformDirectory)
         displayName: 'Create tfvars file from global variables'
         env:
