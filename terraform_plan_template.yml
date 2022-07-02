@@ -1,5 +1,5 @@
 parameters:
-- name: tf-working-directory
+- name: tfWorkingDir
   type: string
   displayName: Terraform Working Directory
   default: $(Pipeline.Workspace)
@@ -9,7 +9,7 @@ steps:
   - script: |
       echo "##[group]Running terraform init"
       terraform init -input=false
-    workingDirectory: ${{ parameters.tf-working-directory }}
+    workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Init'
     failOnStderr: true
     env:
@@ -21,7 +21,7 @@ steps:
   - script: |
       echo "##[group]Running terraform validate and fmt"
       terraform validate
-    workingDirectory: ${{ parameters.tf-working-directory }}
+    workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Validation'
     failOnStderr: true
     env:
@@ -33,7 +33,7 @@ steps:
   - script: |
       echo "##[group]Running terraform plan"
       terraform plan
-    workingDirectory: ${{ parameters.tf-working-directory }}
+    workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Plan'
     failOnStderr: true
     env:

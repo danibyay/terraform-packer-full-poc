@@ -1,5 +1,5 @@
 parameters:
-- name: tf-working-directory
+- name: tfWorkingDir
   type: string
   displayName: Terraform Working Directory
   default: $(Pipeline.Workspace)
@@ -10,7 +10,7 @@ steps:
       terraform init
       terraform apply -auto-approve
 
-    workingDirectory: ${{ parameters.tf-working-directory }}
+    workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Apply'
     failOnStderr: true
     env:
