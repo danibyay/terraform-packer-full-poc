@@ -14,7 +14,7 @@ steps:
       terraform init
       if [ -z "$EXTRA_ARGS" ]
       then
-       terraform apply -auto-approve
+        terraform apply -auto-approve
       else
         terraform apply -auto-approve -var=$EXTRA_ARGS
       fi

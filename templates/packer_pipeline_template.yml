@@ -23,6 +23,13 @@ parameters:
   displayName: json template file name
   type: string
   default: 'windows-template-project1.json'
+- name: galleryRegion
+  displayName: replication region for gallery
+  type: string
+- name: vm_size
+  displayName: packer build vm size
+  type: string
+
 
 
 steps:
@@ -57,7 +64,7 @@ steps:
 - script: |
     echo "##[group]Running packer build"
     packer init
-    packer build $(Build.Repository.LocalPath)/'${{ parameters.templateDirectory }}/${{ parameters.packerJsonFileName }}'
+    packer build -force $(Build.Repository.LocalPath)/'${{ parameters.templateDirectory }}/${{ parameters.packerJsonFileName }}'
   workingDirectory: $(projectRoot)
   displayName: 'packer build'
   failOnStderr: true
@@ -72,3 +79,5 @@ steps:
     PACKER_RG: ${{ parameters.packerResourceGroup }}
     IMAGE_VERSION: ${{ parameters.imageVersion }}
     ANSIBLE_ROLES_PATH:  $(Build.Repository.LocalPath)/roles
+    VM_SIZE: ${{ parameters.vm_size }}
+    REPLICATION_REGION: ${{ parameters.galleryRegion }}

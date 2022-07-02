@@ -32,7 +32,7 @@ variables:
 - name: image_sku
   value: 'Example1234'
 - name: image_version
-  value: "1.0.0"
+  value: "1.0.1"
 # packer related vars
 - name: packer_rg_name
   value: 'project1-packer-rg'
@@ -51,7 +51,7 @@ variables:
   value: 'project1-scaleset-subnet'
 - name: scaleset_name
   value: 'project1-vmscaleset-for-azdo'
-- name: vm_size # TODO: Add this to the packer pipeline parameters and json
+- name: vm_size
   value: 'Standard_D2_v2'
 - name: os_disk_size
   value: '256'
@@ -161,6 +161,9 @@ stages:
           imageVersion: $(image_version)
           templateDirectory: $(projectDirectory)
           packerJsonFileName: $(packerJsonFileName)
+          vm_size: $(vm_size)
+          galleryRegion: $(azure_location)
+
 
 - stage: TerraformScaleset
   dependsOn: packerBuild

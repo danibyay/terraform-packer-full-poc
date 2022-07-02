@@ -37,7 +37,7 @@ steps:
       echo "##[group]Running terraform plan"
       if [ -z "$EXTRA_ARGS" ]
       then
-       terraform plan
+        terraform plan
       else
         terraform plan -var=$EXTRA_ARGS
       fi
