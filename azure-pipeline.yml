@@ -35,6 +35,8 @@ stages:
   jobs:
   - job: plan
     displayName: Terraform Plan
+    variables:
+      TF_VAR_gallery_rg_name: $(TF_VAR_gallery_rg_name)
     workspace:
       clean: all
     steps:
