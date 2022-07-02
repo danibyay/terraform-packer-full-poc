@@ -10,6 +10,8 @@ variables:
   value: 'Azure Pipelines'
 - name: vmImage
   value: 'ubuntu-latest'
+- name: imgDefTerraformDirectory
+  value: './image_def'
 # image related vars
 - name: gallery_rg_name
   value: 'dani-resource-group'
@@ -39,10 +41,18 @@ stages:
       clean: all
     steps:
       - checkout: self
+      - task: CopyFiles@2
+        displayName: 'copy script to terraform directory'
+        inputs:
+          SourceFolder: '$(Pipeline.Workspace)/scripts'
+          Contents: |
+            write_img_def_tfvars.sh
+          TargetFolder: $(imgDefTerraformDirectory)
+          OverWrite: true
       - script: |
           chmod +x scripts/write_img_def_tfvars.sh
           cat terraform.tfvars
-        workingDirectory: './image_def'
+        workingDirectory: $(imgDefTerraformDirectory)
         displayName: 'Create tfvars file from global variables'
         env:
           gallery_rg_name: $(gallery_rg_name)
@@ -53,7 +63,7 @@ stages:
           image_sku: $(image_sku)
       - template: 'templates/terraform_plan_template.yml'
         parameters:
-          tfWorkingDir: './image_def'
+          tfWorkingDir: $(imgDefTerraformDirectory)
       - template: 'templates/terraform_apply_template.yml'
         parameters:
-          tfWorkingDir: './image_def'
+          tfWorkingDir: $(imgDefTerraformDirectory)
