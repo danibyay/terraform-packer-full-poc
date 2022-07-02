@@ -162,7 +162,6 @@ stages:
           templateDirectory: $(projectDirectory)
           packerJsonFileName: $(packerJsonFileName)
 
-stages:
 - stage: TerraformScaleset
   dependsOn: packerBuild
   condition: eq('${{ parameters.deployScaleset }}' , 'true')
