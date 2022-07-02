@@ -38,6 +38,7 @@ stages:
     workspace:
       clean: all
     steps:
+      - checkout: self
       - script: |
           chmod +x scripts/write_img_def_tfvars.sh
           cat terraform.tfvars

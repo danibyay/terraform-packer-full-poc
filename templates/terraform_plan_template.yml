@@ -5,7 +5,6 @@ parameters:
   default: $(Pipeline.Workspace)
 
 steps:
-  - checkout: self
   - script: |
       echo "##[group]Running terraform init"
       terraform init -input=false
