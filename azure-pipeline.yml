@@ -10,11 +10,24 @@ variables:
   value: 'Azure Pipelines'
 - name: vmImage
   value: 'ubuntu-latest'
+# image related vars
+- name: TF_VAR_gallery_rg_name
+  value: 'dani-resource-group'
+- name: TF_VAR_gallery_name
+  value: 'winGallery'
+- name: TF_VAR_image_name
+  value: 'test-image-1'
+- name: TF_VAR_image_publisher
+  value: 'DanielaBG'
+- name: TF_VAR_image_offer
+  value: 'WindowsServer'
+- name: TF_VAR_image_sku
+  value: 'Example12345'
 
 
 stages:
-- stage: Terraform
-  displayName: Deploy Terraform
+- stage: TerraformImg
+  displayName: Deploy Terraform for image definition
   pool:
     name: $(poolName)
     vmImage: $(vmImage)

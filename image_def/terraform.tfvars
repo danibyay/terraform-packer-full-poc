@@ -1,6 +1,0 @@
-gallery_rg_name   = "dani-resource-group"
-gallery_name      = "winGallery"
-image_name        = "test-image-1"
-image_publisher   = "DanielaBG"
-image_offer       = "WindowsServer"
-image_sku         = "Example1234"
