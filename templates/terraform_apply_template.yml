@@ -3,12 +3,16 @@ parameters:
   type: string
   displayName: Terraform Working Directory
   default: $(Pipeline.Workspace)
+- name: extraArgs
+  type: string
+  displayName: secret env vars to be passed to tf command
+  default: ''
 
 steps:
   - script: |
       echo "##[group]Running terraform Apply"
       terraform init
-      terraform apply -auto-approve
+      terraform apply -auto-approve $EXTRA_ARGS
 
     workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Apply'
@@ -19,3 +23,4 @@ steps:
       ARM_TENANT_ID: $(Tenant_ID)
       ARM_SUBSCRIPTION_ID: $(Subscription_ID)
       ACCOUNT_KEY: $(Storage_Account_Key)
+      EXTRA_ARGS: ${{ parameters.extraArgs }}

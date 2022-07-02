@@ -2,28 +2,28 @@
 # the image version data source
 # in another terraform configuration (scale sets)
 variable "gallery_rg_name" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "The resource group the gallery is located at"
   type        = string
 }
 variable "gallery_name" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "The name of the image gallery"
   type        = string
 }
 variable "image_name" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "The name of the image definition"
   type        = string
 }
 # publisher and offer stay the same always
 variable "image_publisher" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "Image publisher (author)"
   type        = string
 }
 variable "image_offer" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "Image offer (OS)"
   type        = string
 }
 # sku is different for each project
 variable "image_sku" {
-  description = "The resource group the Key Vault shold be placed"
+  description = "Image SKU (unique id)"
   type        = string
 }

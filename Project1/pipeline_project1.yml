@@ -3,7 +3,12 @@ trigger:
     include:
     - main
     - develop
-    - add_packer_stage
+
+parameters:
+- name: deployScaleset
+  type: bool
+  displayName: last stage to run after image has been tested
+  default: false
 
 variables:
 - group: TF_PIPELINES
@@ -35,11 +40,30 @@ variables:
   value: 'Project1'
 - name: packerJsonFileName
   value: 'windows-template-project1.json'
+- name: azure_location
+  value: us-east
+# Scale set related vars
+- name: scaleset_rg
+  value: 'project1-scaleset-rg'
+- name: scaleset_vnet
+  value: 'project1-scaleset-vnet'
+- name: scaleset_subnet_name
+  value: 'project1-scaleset-subnet'
+- name: scaleset_name
+  value: 'project1-vmscaleset-for-azdo'
+- name: vm_size # TODO: Add this to the packer pipeline parameters and json
+  value: 'Standard_D2_v2'
+- name: os_disk_size
+  value: '256'
+- name: scaleset_extra_secret_var
+  value: '-var="vm_admin_password=$(VM_password)"'
 # Terraform working directories
 - name: imgDefTerraformDirectory
   value: '$(Build.Repository.LocalPath)/$(projectDirectory)/image_def'
 - name: packerRgTerraformDirectory
   value: '$(Build.Repository.LocalPath)/$(projectDirectory)/packer_rg'
+- name: scaleSetTerraformDirectory
+  value: '$(Build.Repository.LocalPath)/$(projectDirectory)/vm_scaleset'
 
 stages:
 - stage: TerraformPrereq
@@ -95,7 +119,8 @@ stages:
       - script: |
           ##[debug] Creating terraform.tfvars for packer rg
           cat <<EOF > "terraform.tfvars"
-          packer_rg_name   = "$packer_rg_name"
+          packer_rg_name     = "$packer_rg_name"
+          packer_rg_location = "$packer_rg_location"
           EOF
           ##[debug] cat terraform.tfvars
           cat terraform.tfvars
@@ -103,6 +128,7 @@ stages:
         displayName: 'Create tfvars file from global variables'
         env:
           packer_rg_name: $(packer_rg_name)
+          packer_rg_location: $(azure_location)
       - template: '../templates/terraform_plan_template.yml'
         parameters:
           tfWorkingDir: $(packerRgTerraformDirectory)
@@ -135,3 +161,51 @@ stages:
           imageVersion: $(image_version)
           templateDirectory: $(projectDirectory)
           packerJsonFileName: $(packerJsonFileName)
+
+stages:
+- stage: TerraformScaleset
+  dependsOn: packerBuild
+  condition: eq('${{ parameters.deployScaleset }}' , 'true')
+  displayName: Deploy Terraform scaleset with packer image
+  pool:
+    name: $(poolName)
+    vmImage: $(vmImage)
+
+  jobs:
+  - job: terraformScaleset
+    displayName: Terraform scale set
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+      - task: CopyFiles@2
+        displayName: 'copy script to terraform directory'
+        inputs:
+          SourceFolder: '$(Build.Repository.LocalPath)/scripts'
+          Contents: |
+            write_scaleset_tfvars.sh
+          TargetFolder: $(scaleSetTerraformDirectory)
+          OverWrite: true
+      - script: |
+          chmod +x write_scaleset_tfvars.sh
+          ./write_scaleset_tfvars.sh
+          ##[debug] cat terraform.tfvars
+          cat terraform.tfvars
+        workingDirectory: $(scaleSetTerraformDirectory)
+        displayName: 'Create tfvars file from global variables'
+        env:
+          gallery_rg_name: $(gallery_rg_name)
+          gallery_name: $(gallery_name)
+          image_name: $(image_name)
+          image_publisher: $(image_publisher)
+          image_offer: $(image_offer)
+          image_sku: $(image_sku)
+
+      - template: '../templates/terraform_plan_template.yml'
+        parameters:
+          tfWorkingDir: $(scaleSetTerraformDirectory)
+          extraArgs: $(scaleset_extra_secret_var)
+      - template: '../templates/terraform_apply_template.yml'
+        parameters:
+          tfWorkingDir: $(scaleSetTerraformDirectory)
+          extraArgs: $(scaleset_extra_secret_var)

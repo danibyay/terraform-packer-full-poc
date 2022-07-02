@@ -57,7 +57,7 @@ steps:
 - script: |
     echo "##[group]Running packer build"
     packer init
-    packer build -force $(Build.Repository.LocalPath)/'${{ parameters.templateDirectory }}/${{ parameters.packerJsonFileName }}'
+    packer build $(Build.Repository.LocalPath)/'${{ parameters.templateDirectory }}/${{ parameters.packerJsonFileName }}'
   workingDirectory: $(projectRoot)
   displayName: 'packer build'
   failOnStderr: true
