@@ -193,12 +193,18 @@ stages:
         workingDirectory: $(scaleSetTerraformDirectory)
         displayName: 'Create tfvars file from global variables'
         env:
+          scaleset_rg: $(scaleset_rg)
+          location: $(azure_location)
+          scaleset_vnet: $(scaleset_vnet)
+          scaleset_subnet_name: $(scaleset_subnet_name)
+          scaleset_name: $(scaleset_name)
+          vm_size: $(vm_size)
+          os_disk_size: $(os_disk_size)
+          image_version: $(image_version)
           gallery_rg_name: $(gallery_rg_name)
           gallery_name: $(gallery_name)
           image_name: $(image_name)
-          image_publisher: $(image_publisher)
-          image_offer: $(image_offer)
-          image_sku: $(image_sku)
+
 
       - template: '../templates/terraform_plan_template.yml'
         parameters:

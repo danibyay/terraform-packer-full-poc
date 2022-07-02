@@ -12,8 +12,12 @@ steps:
   - script: |
       echo "##[group]Running terraform Apply"
       terraform init
-      terraform apply -auto-approve -var=$EXTRA_ARGS
-
+      if [ -z "$EXTRA_ARGS" ]
+      then
+       terraform apply -auto-approve
+      else
+        terraform apply -auto-approve -var=$EXTRA_ARGS
+      fi
     workingDirectory: ${{ parameters.tfWorkingDir }}
     displayName: 'Terraform Apply'
     failOnStderr: true
