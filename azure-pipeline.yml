@@ -44,7 +44,7 @@ stages:
       - task: CopyFiles@2
         displayName: 'copy script to terraform directory'
         inputs:
-          SourceFolder: '$(Pipeline.Workspace)/scripts'
+          SourceFolder: './scripts'
           Contents: |
             write_img_def_tfvars.sh
           TargetFolder: $(imgDefTerraformDirectory)
