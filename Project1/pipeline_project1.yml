@@ -11,11 +11,7 @@ variables:
   value: 'Azure Pipelines'
 - name: vmImage
   value: 'ubuntu-latest'
-# Terraform working directories
-- name: imgDefTerraformDirectory
-  value: './image_def'
-- name: packerRgTerraformDirectory
-  value: './packer_rg'
+
 # image related vars
 - name: gallery_rg_name
   value: 'dani-resource-group'
@@ -38,6 +34,11 @@ variables:
   value: 'Project1'
 - name: packerJsonFileName
   value: 'windows-template-project1.json'
+# Terraform working directories
+- name: imgDefTerraformDirectory
+  value: '$(Build.Repository.LocalPath)/$(projectDirectory)/image_def'
+- name: packerRgTerraformDirectory
+  value: '$(Build.Repository.LocalPath)/$(projectDirectory)/packer_rg'
 
 stages:
 - stage: TerraformPrereq
@@ -56,7 +57,7 @@ stages:
       - task: CopyFiles@2
         displayName: 'copy script to terraform directory'
         inputs:
-          SourceFolder: '../scripts'
+          SourceFolder: '$(Build.Repository.LocalPath)/scripts'
           Contents: |
             write_img_def_tfvars.sh
           TargetFolder: $(imgDefTerraformDirectory)
@@ -84,6 +85,7 @@ stages:
           tfWorkingDir: $(imgDefTerraformDirectory)
 
   - job: terraformRG
+    dependsOn: terraformImgDef
     displayName: Terraform packer resource group
     workspace:
       clean: all
@@ -108,6 +110,7 @@ stages:
           tfWorkingDir: $(packerRgTerraformDirectory)
 
 - stage: packerBuild
+  dependsOn: TerraformPrereq
   displayName: Build Packer Image
   pool:
     name: $(poolName)
