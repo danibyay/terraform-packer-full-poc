@@ -49,10 +49,7 @@ stages:
             write_img_def_tfvars.sh
           TargetFolder: $(imgDefTerraformDirectory)
           OverWrite: true
-      - script: |
-          chmod +x write_img_def_tfvars.sh
-          ./write_img_def_tfvars.sh
-          cat terraform.tfvars
+      - script: write_img_def_tfvars.sh
         workingDirectory: $(imgDefTerraformDirectory)
         displayName: 'Create tfvars file from global variables'
         env:
@@ -62,6 +59,11 @@ stages:
           image_publisher: $(image_publisher)
           image_offer: $(image_offer)
           image_sku: $(image_sku)
+      - script: |
+          ##[debug] cat terraform.tfvars
+          cat terraform.tfvars
+        workingDirectory: $(imgDefTerraformDirectory)
+        displayName: cat tfvars file
       - template: 'templates/terraform_plan_template.yml'
         parameters:
           tfWorkingDir: $(imgDefTerraformDirectory)
