@@ -1,0 +1,10 @@
+- name: Download Visual Studio C++ 2005 service pack
+  win_get_url:
+    url: 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=26347'
+    dest: 'C:\Users\waibuildadmin\temp\vcredist_x86.EXE'
+
+- name: Install Visual Studio C++ service pack
+  win_package:
+    path: C:\Users\waibuildadmin\temp\vcredist_x86.EXE
+    state: present
+    arguments: /Q

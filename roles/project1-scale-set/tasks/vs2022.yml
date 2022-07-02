@@ -1,0 +1,15 @@
+---
+- name: Create C:\TEMP directory
+  win_file: path='C:\TEMP' state=directory
+
+- name: VS2022 17.0 Long term support | Download Visual Studio Professional With Updates 2022 Setup
+  win_get_url:
+    url: 'https://aka.ms/vs/17/release.ltsc.17.2/vs_professional.exe'
+    dest: 'C:\TEMP\vs2022_Professional.exe'
+
+- name: Install VS2022
+  win_package:
+    path: C:\TEMP\vs2022_Professional.exe
+    creates_path: 'C:\Program Files (x86)\Microsoft Visual Studio\2022'
+    arguments: --add Microsoft.VisualStudio.Workload.CoreEditor --add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Workload.NetWeb --add Microsoft.Net.Component.4.6.1.SDK --add Microsoft.Net.Component.4.6.2.SDK --passive --includeOptional --includeRecommended --noRestart --wait 
+    state: present

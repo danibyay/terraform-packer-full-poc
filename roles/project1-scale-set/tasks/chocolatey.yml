@@ -1,0 +1,35 @@
+- name: Install Chocolatey
+  win_chocolatey:
+    name: chocolatey
+    state: present
+
+- name: Install Chocolatey packages
+  win_chocolatey:
+    name:
+    - git.install
+    - vscode
+    - 7zip.install
+    - netfx-4.6.2-devpack
+    - python
+    - nodejs-lts
+    - powershell-core
+    - dotnetcore-sdk
+    - netfx-4.7.2-devpack
+    - nuget.commandline
+    state: present
+
+- name: Install chrome browser
+  win_chocolatey:
+    name: googlechrome
+    state: present
+    ignore_checksums: yes
+
+- name: enable NetFx3
+  become: yes
+  become_method: runas
+  become_user: System
+  win_optional_feature:
+    name: NetFx3
+    state: present
+    include_parent: yes
+  register: netfx3

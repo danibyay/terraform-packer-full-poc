@@ -1,0 +1,4 @@
+- name: create temp directory
+  win_file:
+    path: c:\Users\waibuildadmin\temp
+    state: directory

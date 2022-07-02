@@ -1,0 +1,15 @@
+- name: Download azcopy
+  win_get_url:
+    url: 'https://aka.ms/downloadazcopy-v10-windows'
+    dest: 'c:\Users\waibuildadmin\temp\azcopy.zip'
+
+- name: Unzip azcopy
+  community.windows.win_unzip:
+    src: C:\Users\waibuildadmin\temp\azcopy.zip
+    dest: C:\Users\waibuildadmin\temp\azcopy
+    creates: C:\Users\waibuildadmin\temp\azcopy
+
+- name: Add Azcopy to path
+  win_path:
+    elements:
+    - 'C:\Users\waibuildadmin\temp\azcopy\azcopy_windows_amd64_10.13.0\'

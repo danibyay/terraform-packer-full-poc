@@ -1,0 +1,15 @@
+---
+- name: Create C:\TEMP directory
+  win_file: path='C:\TEMP' state=directory
+
+- name: VS2019 16.11.3 | Download Visual Studio Professional With Updates 2019 Setup
+  win_get_url:
+    url: 'https://download.visualstudio.microsoft.com/download/pr/22c17f05-944c-48dc-9f68-b1663f9df4cb/225120c3fac2444b204b44ddeee0dc460e9a3c8ea1b6e386c62d61e4b064987c/vs_Professional.exe'
+    dest: 'C:\TEMP\vs2019_Professional.exe'
+
+- name: Install VS2019
+  win_package:
+    path: C:\TEMP\vs2019_Professional.exe
+    creates_path: 'C:\Program Files (x86)\Microsoft Visual Studio\2019'
+    arguments: --add Microsoft.VisualStudio.Workload.CoreEditor --add Microsoft.VisualStudio.Workload.ManagedDesktop --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Workload.NetCoreTools --add Microsoft.VisualStudio.Workload.NetWeb --add Microsoft.Net.Component.4.6.1.SDK --add Microsoft.Net.Component.4.6.2.SDK --passive --includeOptional --includeRecommended --noRestart --wait 
+    state: present

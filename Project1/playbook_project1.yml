@@ -1,0 +1,5 @@
+---
+- hosts: all
+  remote_user: azureuser
+  roles:
+   - project1-scale-set

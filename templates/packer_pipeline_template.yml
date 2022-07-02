@@ -1,0 +1,74 @@
+parameters:
+- name: imageName
+  displayName: image name
+  type: string
+  default: 'Project1-poc-ansible'
+- name: galleryName
+  displayName: gallery name
+  type: string
+- name: galleryResourceGroup
+  displayName: gallery resource group
+  type: string
+- name: packerResourceGroup
+  displayName: image resource group
+  type: string
+- name: imageVersion
+  displayName: image version
+  type: string
+- name: templateDirectory
+  displayName: directory where the json template is
+  type: string
+  default: 'Project1'
+- name: packerJsonFileName
+  displayName: json template file name
+  type: string
+  default: 'windows-template-project1.json'
+
+
+steps:
+
+- script: |
+    pip3 install pywinrm
+    pip3 install requests
+    python3 -m pip install --user --ignore-installed pywinrm
+    python3 -m pip install --user ansible
+    python3 -m pip install --user paramiko
+    ansible-galaxy collection install azure.azcollection
+    ansible-galaxy collection list
+  workingDirectory: $(projectRoot)
+  displayName: "Install requirements"
+
+- script: |
+    echo "pip3 --version"
+    pip3 --version
+    echo "python home"
+    which python3
+    echo "home of python where ansible is installed"
+    head -n 1 $(which ansible)
+    echo "the second and third path should be the same to make sure the pip install packages are available for ansible"
+  workingDirectory: $(projectRoot)
+  displayName: "troubleshoot"
+
+- script: python3 -m pip list
+  workingDirectory: $(projectRoot)
+  displayName: "pip list installed packages"
+
+
+- script: |
+    echo "##[group]Running packer build"
+    packer init
+    packer build -force $(Build.Repository.LocalPath)/'${{ parameters.templateDirectory }}/${{ parameters.packerJsonFileName }}'
+  workingDirectory: $(projectRoot)
+  displayName: 'packer build'
+  failOnStderr: true
+  env:
+    ARM_CLIENT_ID: $(Client_ID)
+    ARM_CLIENT_SECRET: $(Client_Secret)
+    ARM_TENANT_ID: $(Tenant_ID)
+    ARM_SUBSCRIPTION_ID: $(Subscription_ID)
+    IMAGE_NAME: ${{ parameters.imageName }}
+    GALLERY_NAME: ${{ parameters.galleryName }}
+    GALLERY_RG: ${{ parameters.galleryResourceGroup }}
+    PACKER_RG: ${{ parameters.packerResourceGroup }}
+    IMAGE_VERSION: ${{ parameters.imageVersion }}
+    ANSIBLE_ROLES_PATH:  $(Build.Repository.LocalPath)/roles

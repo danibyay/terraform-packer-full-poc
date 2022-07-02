@@ -1,0 +1,10 @@
+- name: Download azure devops agent
+  win_get_url:
+    url: 'https://vstsagentpackage.azureedge.net/agent/2.200.2/vsts-agent-win-x64-2.200.2.zip'
+    dest: 'C:\Users\waibuildadmin\temp\vsts-agent-win-x64-2.200.2.zip'
+
+- name: Unzip AzDevops agent files
+  community.windows.win_unzip:
+    src: C:\Users\waibuildadmin\temp\vsts-agent-win-x64-2.200.2.zip
+    dest: C:\agent
+    creates: C:\agent
